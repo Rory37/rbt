@@ -117,7 +117,7 @@ void leftro(node** root, node* toro) {
   if(y -> getLeft() != NULL) {//new parent for left branch must be toro
     y -> getLeft() -> setParent(toro);
   }
-  y -> setParent(toro -> getParent());
+  y -> setParent(toro -> getParent());//y parent is toro parent
   if(toro == (*root)) { //if at root
     (*root) = y; //new root is the y
   }
@@ -136,11 +136,10 @@ void leftro(node** root, node* toro) {
 void rightro(node** root, node* toro) {
   node* y = toro -> getLeft(); //Holds onto the rotated node's right
   toro -> setLeft(y -> getRight());//shifts the y right branch to be original node left branch
-  //y -> getRight() -> setParent(toro);
   if(y -> getRight() != NULL) {//new parent for right branch must be toro
     y -> getRight() -> setParent(toro);
   }
-  y -> setParent(toro -> getParent());
+  y -> setParent(toro -> getParent()); //Y parent is toro parent
   if(toro == (*root)) { //if at root
     (*root) = y; //new root is the y
   }
@@ -157,44 +156,44 @@ void rightro(node** root, node* toro) {
 }
 
 void fix (node** root, node* z) {
-  while(z -> getParent() != NULL && z -> getParent() -> getCol() == 0 && z != (*root)) {//while not root and red
-    //if z parent is grandparents left
-    if(z -> getParent() == z -> getParent() -> getParent() -> getLeft()) {
+  while(z -> getParent() != NULL && z -> getParent() -> getCol() == 0 && z != (*root)) {//while not root and red parent
+    //will stop running at case 2
+    if(z -> getParent() == z -> getParent() -> getParent() -> getLeft()) {//if parent is to left of grandparent
       node* y = z -> getParent() -> getParent() -> getRight(); // uncle to z
-      if(y != NULL && y -> getCol() == 0) {//if uncle was red
+      if(y != NULL && y -> getCol() == 0) {//if uncle was red (case 3) 
 	z -> getParent() -> setCol(1); //Parent is black
 	y -> setCol(1); //sets the uncle to be black
 	z -> getParent() -> getParent() -> setCol(0); //Grandparent is red
-	z = z -> getParent() -> getParent();
+	z = z -> getParent() -> getParent();//z is z grandparent
       }
       else {
- 	if(z == z -> getParent() -> getRight()) {//right child
+ 	if(z == z -> getParent() -> getRight()) {//right child (case 4 triangle)
 	  z = z -> getParent(); //Runs leftro with parent
 	  leftro(root, z); //Runs left rotation
 	}	
-	z -> getParent() -> setCol(1); //sets parent to black
+	z -> getParent() -> setCol(1); //sets parent to black (case 4 line)
 	z -> getParent() -> getParent() -> setCol(0); //Grandparent is red
 	rightro(root, z -> getParent() -> getParent()); //right rotates with grandparent
       }
     }
-    else {
+    else {//right to granparent
       node* y = z -> getParent() -> getParent() -> getLeft(); // uncle to z
-      if(y != NULL && y -> getCol() == 0) {//if uncle was red
+      if(y != NULL && y -> getCol() == 0) {//if uncle was red (case 3)
 	z -> getParent() -> setCol(1); //Parent is black
 	y -> setCol(1); //sets the new node to be black
 	z -> getParent() -> getParent() -> setCol(0); //Grandparent is red
 	z = z -> getParent() -> getParent();
       }
       else{
-	if(z == z -> getParent() -> getLeft()) {//left child
+	if(z == z -> getParent() -> getLeft()) {//left child (case 4 triangle)
 	  z = z -> getParent(); //Runs rightro with parent
 	  rightro(root, z); //Runs right rotation
 	}
-	z -> getParent() -> setCol(1); //sets parent to black
+	z -> getParent() -> setCol(1); //sets parent to black (case 4 line);
 	z -> getParent() -> getParent() -> setCol(0); //Grandparent is red
 	leftro(root, z -> getParent() -> getParent()); //left rotates with grandparent
       }
     }
   }
-  (*root) -> setCol(1); //root is black
+  (*root) -> setCol(1); //root is black (case 1)
 }
